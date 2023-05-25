@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- viewport for responsive design -->
     <title>Music Tracking App</title> 
     <link rel="stylesheet" type="text/css" href="style.css"> <!-- Links custom CSS file for styling -->
-    <script src="https://kit.fontawesome.com/b1ba508e46.js"></script>
+    <script src="https://kit.fontawesome.com/b1ba508e46.js"></script>  <!-- links to external source of icons -->
 </head>
 
 <body> 
@@ -17,8 +17,13 @@
         <h1>songName</h1>
         <h4>artistName</h4>
         <h4>albumName</h4>
-        <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
         <p>duration, genre</p>
+        <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
+        <div id="music-controller">
+            <button id="back"><i class="fa-solid fa-backward fa-2xl" style="color: #23036A;"></i></button>
+            <button id="playbutton"><i class="fa-solid fa-play fa-2xl" style="color: #23036A;"></i></button>
+            <button id="forward"><i class="fa-solid fa-forward fa-2xl" style="color: #23036A;"></i></button>
+        </div>
     </section>
 
     <!-- playlist on the right side -->
@@ -26,15 +31,16 @@
 
         <!-- form to get user inputs -->
         <form id="searchsong">
-            <label for="song"><i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i></label>
+            <label for="song"><i class="fa-solid fa-magnifying-glass fa-2xl" style="color: #ffffff;"></i></label>
             <input type="text" name="song" id="songInput" placeholder="What do you want to listen to?">
         </form>
 
+         <!-- Playlist name -->
+        <h2>playlistName</h2>
+
         <!-- top half of playlist containing elements -->
         <section id = "playlistheader">
-            <!-- Playlist name -->
-            <h2>playlistName</h2>
-            <!-- Suggest Button -->
+            <p>duration</p>
             <button id="suggest"> SUGGEST </button>
         </section>
 
@@ -47,7 +53,7 @@
                 <h5>artistName</h5>
                 </div>
                 <p>dd/mm/yy</p>
-                <button class="delete"> <i class="fa-solid fa-trash" style="color: #ffffff;"></i> </button>
+                <button class="delete"> <i class="fa-solid fa-trash fa-2xl" style="color: #ffffff;"></i> </button>
             </div>
             <div class="playlist-item">
                 <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
@@ -56,7 +62,7 @@
                 <h5>artistName</h5>
                 </div>
                 <p>dd/mm/yy</p>
-                <button class="delete"> <i class="fa-solid fa-trash" style="color: #ffffff;"></i> </button>
+                <button class="delete"> <i class="fa-solid fa-trash fa-2xl" style="color: #ffffff;"></i> </button>
             </div>
             <div class="playlist-item">
                 <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
@@ -65,7 +71,7 @@
                 <h5>artistName</h5>
                 </div>
                 <p>dd/mm/yy</p>
-                <button class="delete"> <i class="fa-solid fa-trash" style="color: #ffffff;"></i> </button>
+                <button class="delete"> <i class="fa-solid fa-trash fa-2xl" style="color: #ffffff;"></i> </button>
             </div>
             <div class="playlist-item">
                 <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
@@ -74,7 +80,7 @@
                 <h5>artistName</h5>
                 </div>
                 <p>dd/mm/yy</p>
-                <button class="delete"> <i class="fa-solid fa-trash" style="color: #ffffff;"></i> </button>
+                <button class="delete"> <i class="fa-solid fa-trash fa-2xl" style="color: #ffffff;"></i> </button>
             </div>
             <div class="playlist-item">
                 <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
@@ -83,7 +89,7 @@
                 <h5>artistName</h5>
                 </div>
                 <p>dd/mm/yy</p>
-                <button class="delete"> <i class="fa-solid fa-trash" style="color: #ffffff;"></i> </button>
+                <button class="delete"> <i class="fa-solid fa-trash fa-2xl" style="color: #ffffff;"></i> </button>
             </div>
         </section>
 
