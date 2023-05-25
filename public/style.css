@@ -4,12 +4,14 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
-/* alter song to display full text */
+/* alter song input field to display full text */
 #songInput {
     width: 20em;
+    padding: 8px 15px;
+    border-radius: 25px;
 }
 
-
+/* add font styling based off A2 guidelines */
 h1{
     font-size: 86px;
     font-weight: bold;
@@ -38,5 +40,24 @@ h5{
 p{
     font-size: 16px;
     font-weight: initial;
+}
+
+
+/* Select all buttons inside the playlist */
+#suggest {
+    padding: 8px 15px;
+    background-color: #019592;
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+}
+
+.delete{
+    padding: 8px 15px;
+    background-color: #707070;
+    color: #000000;
+    border: none;
+    border-radius: 25px;
+
 }
 
