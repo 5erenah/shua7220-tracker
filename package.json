@@ -1,11 +1,10 @@
 {
-  "name": "shua7220-tracker-2",
+  "name": "shua7220-tracker",
   "version": "1.0.0",
-  "description": "a song tracker",
+  "description": "Music tracking application",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npx parcel public/index.html"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -16,8 +15,5 @@
   "bugs": {
     "url": "https://github.com/5erenah/shua7220-tracker/issues"
   },
-  "homepage": "https://github.com/5erenah/shua7220-tracker#readme",
-  "dependencies": {
-    "parcel": "^2.8.3"
-  }
+  "homepage": "https://github.com/5erenah/shua7220-tracker#readme"
 }
