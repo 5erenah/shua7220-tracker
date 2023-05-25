@@ -6,19 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- viewport for responsive design -->
     <title>Music Tracking App</title> 
     <link rel="stylesheet" type="text/css" href="style.css"> <!-- Links custom CSS file for styling -->
+    <script src="https://kit.fontawesome.com/b1ba508e46.js"></script>
 </head>
 
 <body> 
-
        
     <!-- music player on the left side -->
 
     <section id="music-player">
-
         <h1>songName</h1>
-        <h3>artistName</h3>
-        <h3>albumName</h3>
-        <p>decription</p>
+        <h4>artistName</h4>
+        <h4>albumName</h4>
+        <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
+        <p>duration, genre</p>
     </section>
 
     <!-- playlist on the right side -->
@@ -26,7 +26,7 @@
 
         <!-- form to get user inputs -->
         <form id="searchsong">
-            <label for="song">Song:</label>
+            <label for="song"><i class="fa-solid fa-magnifying-glass" style="color: #ffffff;"></i></label>
             <input type="text" name="song" id="songInput" placeholder="What do you want to listen to?">
         </form>
 
@@ -41,33 +41,49 @@
         <section id = playlistbody>
             <!-- each individual item in the playlist -->
             <div class="playlist-item">
+                <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
+                <div class="songArtist"> 
                 <h5>songName</h5>
                 <h5>artistName</h5>
+                </div>
                 <p>dd/mm/yy</p>
-                <button class="delete"> Remove </button>
+                <button class="delete"> <i class="fa-solid fa-trash" style="color: #ffffff;"></i> </button>
             </div>
             <div class="playlist-item">
+                <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
+                <div class="songArtist"> 
                 <h5>songName</h5>
                 <h5>artistName</h5>
+                </div>
                 <p>dd/mm/yy</p>
-                <button class="delete"> Remove </button>
+                <button class="delete"> <i class="fa-solid fa-trash" style="color: #ffffff;"></i> </button>
             </div>
             <div class="playlist-item">
-                <h5>songName artistName</h5>
-                <p>dd/mm/yy</p>
-                <button class="delete"> Remove </button>
-            </div>
-            <div class="playlist-item">
+                <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
+                <div class="songArtist"> 
                 <h5>songName</h5>
                 <h5>artistName</h5>
+                </div>
                 <p>dd/mm/yy</p>
-                <button class="delete"> Remove </button>
+                <button class="delete"> <i class="fa-solid fa-trash" style="color: #ffffff;"></i> </button>
             </div>
             <div class="playlist-item">
+                <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
+                <div class="songArtist"> 
                 <h5>songName</h5>
                 <h5>artistName</h5>
+                </div>
                 <p>dd/mm/yy</p>
-                <button class="delete"> Remove </button>
+                <button class="delete"> <i class="fa-solid fa-trash" style="color: #ffffff;"></i> </button>
+            </div>
+            <div class="playlist-item">
+                <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
+                <div class="songArtist"> 
+                <h5>songName</h5>
+                <h5>artistName</h5>
+                </div>
+                <p>dd/mm/yy</p>
+                <button class="delete"> <i class="fa-solid fa-trash" style="color: #ffffff;"></i> </button>
             </div>
         </section>
 
