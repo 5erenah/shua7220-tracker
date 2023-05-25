@@ -10,15 +10,11 @@
 
 <body> 
 
-    <!-- form to get user inputs -->
-    <form id="searchsong">
-        <label for="song">Song:</label>
-        <input type="text" name="song" id="songInput" placeholder="What do you want to listen to?">
-    </form>
-
        
     <!-- music player on the left side -->
+
     <section id="music-player">
+
         <h1>songName</h1>
         <h3>artistName</h3>
         <h3>albumName</h3>
@@ -27,6 +23,13 @@
 
     <!-- playlist on the right side -->
     <section id="playlist">
+
+        <!-- form to get user inputs -->
+        <form id="searchsong">
+            <label for="song">Song:</label>
+            <input type="text" name="song" id="songInput" placeholder="What do you want to listen to?">
+        </form>
+
         <!-- top half of playlist containing elements -->
         <section id = "playlistheader">
             <!-- Playlist name -->
@@ -37,31 +40,30 @@
 
         <section id = playlistbody>
             <!-- each individual item in the playlist -->
-            <div class="playlist item1">
+            <div class="playlist-item">
                 <h5>songName</h5>
                 <h5>artistName</h5>
                 <p>dd/mm/yy</p>
                 <button class="delete"> Remove </button>
             </div>
-            <div class="playlist item2">
+            <div class="playlist-item">
                 <h5>songName</h5>
                 <h5>artistName</h5>
                 <p>dd/mm/yy</p>
                 <button class="delete"> Remove </button>
             </div>
-            <div class="playlist item3">
+            <div class="playlist-item">
+                <h5>songName artistName</h5>
+                <p>dd/mm/yy</p>
+                <button class="delete"> Remove </button>
+            </div>
+            <div class="playlist-item">
                 <h5>songName</h5>
                 <h5>artistName</h5>
                 <p>dd/mm/yy</p>
                 <button class="delete"> Remove </button>
             </div>
-            <div class="playlist item4">
-                <h5>songName</h5>
-                <h5>artistName</h5>
-                <p>dd/mm/yy</p>
-                <button class="delete"> Remove </button>
-            </div>
-            <div class="playlist item5">
+            <div class="playlist-item">
                 <h5>songName</h5>
                 <h5>artistName</h5>
                 <p>dd/mm/yy</p>

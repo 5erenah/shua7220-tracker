@@ -2,11 +2,17 @@
 
 body {
   font-family: "Roboto", sans-serif;
+  display: flex;
+}
+
+#searchsong {
+    display: flex;
+    align-items: center;
 }
 
 /* alter song input field to display full text */
 #songInput {
-    width: 20em;
+    width: 50%;
     padding: 8px 15px;
     border-radius: 25px;
 }
@@ -42,8 +48,7 @@ p{
     font-weight: initial;
 }
 
-
-/* Select all buttons inside the playlist */
+/* Style suggest button */
 #suggest {
     padding: 8px 15px;
     background-color: #019592;
@@ -52,12 +57,41 @@ p{
     border-radius: 25px;
 }
 
+/* Style delete buttons which remove the song from list */
 .delete{
     padding: 8px 15px;
     background-color: #707070;
     color: #000000;
     border: none;
     border-radius: 25px;
-
 }
 
+/* styling layout */
+#music-player {
+    background-color: #F2E7FE;
+    /* border-radius: 10%; */
+    width: 50%;
+    height: 100vh;
+    color: #23036A;
+    padding: 16px;
+    /* margin-left: -15px; */
+}
+
+/* styling layout */
+#playlist {
+    background-color: #000000;
+    color: #fff;
+    padding: 16px
+}
+
+#playlistbody{
+    height: 60vh;
+    overflow-y: scroll;
+}
+
+/* Making playlist items within one line */
+.playlist-item > * {
+    display: inline-block;
+    vertical-align: baseline;
+    border-color: #F2E7FE;
+}
