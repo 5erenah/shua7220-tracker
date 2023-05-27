@@ -1,8 +1,8 @@
 {
   "name": "shua7220-tracker-2",
   "version": "1.0.0",
-  "description": "a song tracker",
-  "main": "index.js",
+  "description": "Playist Generator",
+  "main": "script.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx parcel public/index.html"

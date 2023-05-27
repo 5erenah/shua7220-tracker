@@ -182,14 +182,14 @@ body {
 
 /* Style delete buttons which remove the song from list */
 .delete{
-    padding: 8px 15px;
+    padding: 1em 2em;
     background-color: transparent;
     border: none;
     border-radius: 25px;
 }
 
 /* styling layout of left side */
-#music-player {
+#login {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -286,5 +286,20 @@ body {
     align-items: center;
     background-color: #23036A; 
 }
+
+label {
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 25px;
+  }
+
+
+@media screen and (max-width: 1000px) {
+    #playlistbody > .playlist-item > .date-added {
+        display: none;
+    }
+}
+
 
   

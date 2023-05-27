@@ -9,92 +9,43 @@
     <script src="https://kit.fontawesome.com/b1ba508e46.js"></script>  <!-- links to external source of icons -->
 </head>
 
-<body> 
-       
-    <!-- music player on the left side -->
+<body onload="onPageLoad()"> 
 
-    <section id="music-player">
-        <h1>songName</h1>
-        <h4>artistName</h4>
-        <h4>albumName</h4>
-        <p>duration, genre</p>
-        <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
-        <div id="music-controller">
-            <button id="back"><i class="fa-solid fa-backward fa-2xl" style="color: #23036A;"></i></button>
-            <button id="playbutton"><i class="fa-solid fa-play fa-2xl" style="color: #23036A;"></i></button>
-            <button id="forward"><i class="fa-solid fa-forward fa-2xl" style="color: #23036A;"></i></button>
+
+<!-- music player on the left side -->
+
+<div id= "login">
+    <div id="welcome">
+        Welcome :)<br><br>Login to Spotify and see your Top 10 artists and songs of all time
+    </div>
+    <div class ="button-log">
+        <button class="login-btn" onclick="authorize()">Login to Spotify</button>
+    </div>
+  </div>
+
+<section id="playlist">
+    <div id = "cover" class="cover">
+        <div class="'nav">
+            welcome to your spotify
         </div>
-    </section>
+        <div class="toggle">
+            <button id = 'track-btn' onclick="getSongs()">
+                top songs 
+            </button>
+        </div>
+        <div id="API" class="API">
+            <div class = "list">
+                <ol id ="list" class="results">
 
-    <!-- playlist on the right side -->
-    <section id="playlist">
-
-        <!-- form to get user inputs -->
-        <form id="searchsong">
-            <label for="song"><i class="fa-solid fa-magnifying-glass fa-2xl" style="color: #ffffff;"></i></label>
-            <input type="text" name="song" id="songInput" placeholder="What do you want to listen to?">
-        </form>
-
-         <!-- Playlist name -->
-        <h2>playlistName</h2>
-
-        <!-- top half of playlist containing elements -->
-        <section id = "playlistheader">
-            <p>duration</p>
-            <button id="suggest"> SUGGEST </button>
-        </section>
-
-        <section id = playlistbody>
-            <!-- each individual item in the playlist -->
-            <div class="playlist-item">
-                <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
-                <div class="songArtist"> 
-                <h5>songName</h5>
-                <h5>artistName</h5>
-                </div>
-                <p>dd/mm/yy</p>
-                <button class="delete"> <i class="fa-solid fa-trash fa-2xl" style="color: #ffffff;"></i> </button>
+                </ol>
             </div>
-            <div class="playlist-item">
-                <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
-                <div class="songArtist"> 
-                <h5>songName</h5>
-                <h5>artistName</h5>
-                </div>
-                <p>dd/mm/yy</p>
-                <button class="delete"> <i class="fa-solid fa-trash fa-2xl" style="color: #ffffff;"></i> </button>
-            </div>
-            <div class="playlist-item">
-                <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
-                <div class="songArtist"> 
-                <h5>songName</h5>
-                <h5>artistName</h5>
-                </div>
-                <p>dd/mm/yy</p>
-                <button class="delete"> <i class="fa-solid fa-trash fa-2xl" style="color: #ffffff;"></i> </button>
-            </div>
-            <div class="playlist-item">
-                <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
-                <div class="songArtist"> 
-                <h5>songName</h5>
-                <h5>artistName</h5>
-                </div>
-                <p>dd/mm/yy</p>
-                <button class="delete"> <i class="fa-solid fa-trash fa-2xl" style="color: #ffffff;"></i> </button>
-            </div>
-            <div class="playlist-item">
-                <img src="https://i.redd.it/w86hly5tslx71.jpg" alt="Album Cover">
-                <div class="songArtist"> 
-                <h5>songName</h5>
-                <h5>artistName</h5>
-                </div>
-                <p>dd/mm/yy</p>
-                <button class="delete"> <i class="fa-solid fa-trash fa-2xl" style="color: #ffffff;"></i> </button>
-            </div>
-        </section>
+        </div>
+</section>
+    
+</div>
+    
 
-
-    </section>
+ 
 
 
 <script src="script.js" type="text/javascript"></script> <!-- Links an custom JavaScript file -->

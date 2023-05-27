@@ -1,281 +1,190 @@
-// IIFE encapulsates code and creates private scope for module 
-const APIController = (function() {
+// Includes code from https://developer.spotify.com/documentation/web-api/tutorials/code-flow
+// login to users profile (user gives permissions)
+// URL to which the user will be redirected after the authentication process.
+var redirect = "http://localhost:1234";
 
-    // stores clientID and client secret from developer tools on Spotify
-    const clientId = 'ad8a873204e5497ab79d7f1ea3451ce8';
-    const clientSecret = 'a35fb90ab96948129f2d21a34e5ab77d';
-    
-    // private methods
-    const _getToken = async () => {
+// credentials provided by Spotify for the application to authenticate with the Spotify API.
+const client_id = 'ad8a873204e5497ab79d7f1ea3451ce8';
+const client_secret = 'a35fb90ab96948129f2d21a34e5ab77d';
+
+// URL for Spotify authorisation endpoint.
+const AUTHORIZE = "http://accounts.spotify.com/authorize";
+// URLs for Spotify API endpoints.
+const TOKEN = "https://accounts.spotify.com/api/token"
+const TRACKS = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time range=short_term";
+
+//accessing html
+const list = document.getElementById('list');
+const cover = document.getElementById ('cover');
+cover.classList.add("hide");
+
+// authorisation URL
+function authorize() {
+    let url = AUTHORIZE;
+    url += "?client_id=" + client_id; 
+    url += "&response_type=code";
+    url += "&redirect_uri=" + encodeURI(redirect);
+    url += "&show_dialog=true";
+    url += "&scope=user-read-private user-read-email user-read-playback-state user-top-read";
+    window.location.href = url;
+}
+
+
+//loading dependant on whether user has previously logged in or not 
+function onPageLoad() {
+    // getSongs();
+    if (window.location.search.length > 0) {
+        handleRedirect();
+    } else {
+        getSongs();
+    }
+}
+
+// fetching access token provided in the URL of login
+function handleRedirect() {
+    let code = getCode();
+    fetchAccessToken(code);
+    window.history.pushState("","",redirect)
+}
+
+function getCode() {
+    let code = null;
+    const queryString = window.location.search;
+    if (queryString.length > 0){
+        const urlParams = new URLSearchParams(queryString);
+        code = urlParams.get(`code`);
+    }
+    return code;
+}
+
+// making an api call 
+function fetchAccessToken(code) {
+    let body = "grant_type=authorization_code"; 
+    body += "&code=" + code; 
+    body += "&client_id=" + client_id; 
+    body += "&client_secret=" + client_secret;
+    callAuthApi(body);
+}
+
+// Post call to spotify API to retrive authorisation data
+function callAuthApi(body) {
+    let xhr = new XMLHttpRequest();
+    xhr.open("POST", TOKEN, true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.setRequestHeader("Authorization", "Basic " + btoa(client_id + ":" + client_secret)); // Add a space after "Basic"
+    xhr.send(body);
+    xhr.onload = handleAuthResponse;
+}
+
+function refreshAcessToken() {
+    refresh_token = localstorage.getItem("refresh_token");
+    let body = "grant_type=refresh_token";
+    body += "&refresh_token=" + refresh_token;
+    body += "&client_id=" + client_id;
+    callAuthApi(body);
+}
+
+function handleAuthResponse() {
+    // if sucessful, have access to users information
+    if(this.status == 200) {
+        var data = JSON.parse(this.responseText);
+        if (data.access_token != undefined) {
+            access_token = data.access_token;
+            localStorage.setItem("refresh_token", refresh_token);
+        } 
+        getSongs();
+    } else { //else return error 
+        console.log(this.repsonseText);
+        alert(this.responseText);
+    }
+}
+
+// get call to the API 
+function getSongs() {
+    callApi("GET", TRACKS, null, handleSongResponse);
+}
+
+// post call to spotify API 
+function callApi(method, url, body, callback) {
+    let xhr = new XMLHttpRequest();
+    xhr.open(method, url, true);
+    xhr.setRequestHeader (`Content-Type`, `application/json`);
+    xhr.setRequestHeader ('Authorization', 'Basic' + localStorage.getItem("access_token"));
+    xhr.send (body);
+    xhil.onload = callback;
+}
+
+function handleSongResponse() {
+    if (this.status == 200) {
+        var data = JSON.parse(this.responseText);
+        console.log(data);
+        songList(data);
+    } else if (this.status == 401){
+        refreshAcessToken();
+    } else {
+        console.log(this.responseText);
+        alert(this.repsonseText);
+    }
+}
+
+function songList (data) {
+    removeItem();
+    cover.classList.remove('hide');
+    for(i = 0; i < data.items.length; i++) {
+        const list_item = document.createtlement ('div');
+        const list_text = document.createElement ('div');
+        const song = document.createElement('div');
+        const artist_album = document.createtlement('div');
+        const img = document.createElement ('img') ;
+        const span = document.createtlement('span');
+        const popu = document.createElement ('div') ;
+        const ref = document.createElement ('a');
+        const link = document.createTextNode ('Link to Spotify') ;
+        ref.appendchild(link);
+        ref.title = "Link to Spotify";
+        ref.href = data.items|il.external_urls.spotify;
+
+        list_item.classList.add("list-item");
+        list_text.classList.add("list-text");
+        song.classList.add ("song") ;
+        artist_album.classList.add("artist-album");
+        ref.classList.add("links");
+        ref.setAttribute("target", "blank");
+        popu.classList.add("popu");
+        img.classList.add("resize");
         
-        // Send a POST request to the Spotify API token endpoint to obtain an access token
-        // The fetch() function sends an HTTP request and returns a promise
-        const result = await fetch('https://accounts.spotify.com/api/token', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Authorization': 'Basic ' + btoa(clientId + ':' + clientSecret)
-        },
-        body: 'grant_type=client_credentials'
-        });
-        // Parse the response data as JSON
-        // The await keyword is used to wait for the response to be resolved
-        const data = await result.json();
-        // Return the access token from the parsed JSON data
-        return data.access_token;
-    }
-    // The private function _getGenres makes a GET request to the Spotify API to retrieve a list of genres
-    const _getGenres = async (token) => {
-    
-        const result = await fetch(`https://api.spotify.com/v1/browse/categories?locale=sv_US`, {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + token }
-        });
-    
-        const data = await result.json();
-        return data.categories.items;
-    }
-    
-    // GET request to the Spotify API to retrive playlists from certain genre
-    const _getPlaylistByGenre = async (token, genreId) => {
-    
-        const limit = 10;
-    
-        const result = await fetch(`https://api.spotify.com/v1/browse/categories/${genreId}/playlists?limit=${limit}`, {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + token }
-        });
-    
-        const data = await result.json();
-        return data.playlists.items;
-    }
-    
-     // GET request to the Spotify API to retrive list of tracks from playlist
-    const _getTracks = async (token, tracksEndPoint) => {
-        // Specify the maximum number of tracks to retrieve (20).
-        const limit = 20;
-    
-        const result = await fetch(`${tracksEndPoint}?limit=${limit}`, {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + token }
-        });
+        var li = document.createElement('li');
+        img.src = data.items[i].album.images[1].url;
 
-        const data = await result.json();
-        return data.items;
-    }
-    
-     // GET request to the Spotify API to retrive certain track from list
-    const _getTrack = async (token, trackEndPoint) => {
-    
-        const result = await fetch(`${trackEndPoint}`, {
-        method: 'GET',
-        headers: { 'Authorization': 'Bearer ' + token }
-        });
-    
-        const data = await result.json();
-        return data;
-    }
-    
-    // Return an object containing several methods for accessing API data
-    return {
-        // Method to obtain the access token
-        getToken() {
-        return _getToken();
-        },
-        // Method to get the genres based on the provided token
-        getGenres(token) {
-        return _getGenres(token);
-        },
-        // Method to get playlists based on the provided token and genreId
-        getPlaylistByGenre(token, genreId) {
-        return _getPlaylistByGenre(token, genreId);
-        },
-        // Method to get tracks based on the provided token and tracksEndPoint
-        getTracks(token, tracksEndPoint) {
-        return _getTracks(token, tracksEndPoint);
-        },
-        // Method to get a specific track based on the provided token and trackEndPoint
-        getTrack(token, trackEndPoint) {
-        return _getTrack(token, trackEndPoint);
+        popu.innerHTML= "Popularity Rating: " + data.items[li].popularity;
+        span.innerHTML = data.items[li].name;
+        artist_album.innerHTML = data.items[i].album.name + " . " + data.items[i].artists[0].name;
+      
+        //span.appendchild(a)
+        song.appendChild(span);
+
+        list_text.appendchild (song) ;
+        list_text.appendChild(artist_album);
+        list_text.appendchild(popu);
+        list_text.appendchild(ref);
+        list_item.appendchild(list_text) ;
+        list_item.appendChild(img);
+        li.appendchild(list_item);
+
+
+        list.appendchild(li);
         }
     }
-    })();
-    
-    
-    // UI Module
-    const UIController = (function() {
-    
-    //object to hold references to html selectors
-    const DOMElements = {
-        selectGenre: '#select_genre',
-        selectPlaylist: '#select_playlist',
-        buttonSubmit: '#btn_submit',
-        divSongDetail: '#song-detail',
-        hfToken: '#hidden_token',
-        divSonglist: '.song-list'
-    }
-    
-    //public methods
-    return {
-    
-        //method to get input fields
-        inputField() {
-        return {
-            genre: document.querySelector(DOMElements.selectGenre),
-            playlist: document.querySelector(DOMElements.selectPlaylist),
-            tracks: document.querySelector(DOMElements.divSonglist),
-            submit: document.querySelector(DOMElements.buttonSubmit),
-            songDetail: document.querySelector(DOMElements.divSongDetail)
-        }
-        },
-    
-        // need methods to create select list option
-        createGenre(text, value) {
-        const html = `<option value="${value}">${text}</option>`;
-        document.querySelector(DOMElements.selectGenre).insertAdjacentHTML('beforeend', html);
-        },
-    
-        createPlaylist(text, value) {
-        const html = `<option value="${value}">${text}</option>`;
-        document.querySelector(DOMElements.selectPlaylist).insertAdjacentHTML('beforeend', html);
-        },
-    
-        // need method to create a track list group item 
-        createTrack(id, name) {
-        const html = `<a href="#" class="list-group-item list-group-item-action list-group-item-light" id="${id}">${name}</a>`;
-        document.querySelector(DOMElements.divSonglist).insertAdjacentHTML('beforeend', html);
-        },
-    
-        // need method to create the song detail
-        createTrackDetail(img, title, artist) {
-    
-        const detailDiv = document.querySelector(DOMElements.divSongDetail);
-        // any time user clicks a new song, we need to clear out the song detail div
-        detailDiv.innerHTML = '';
-    
-        const html =
-            `
-                <div class="row col-sm-12 px-0">
-                    <img src="${img}" alt="">        
-                </div>
-                <div class="row col-sm-12 px-0">
-                    <label for="Genre" class="form-label col-sm-12">${title}:</label>
-                </div>
-                <div class="row col-sm-12 px-0">
-                    <label for="artist" class="form-label col-sm-12">By ${artist}:</label>
-                </div> 
-                `;
-    
-        detailDiv.insertAdjacentHTML('beforeend', html)
-        },
-    
-        resetTrackDetail() {
-        this.inputField().songDetail.innerHTML = '';
-        },
-    
-        resetTracks() {
-        this.inputField().tracks.innerHTML = '';
-        this.resetTrackDetail();
-        },
-    
-        resetPlaylist() {
-        this.inputField().playlist.innerHTML = '';
-        this.resetTracks();
-        },
-    
-        storeToken(value) {
-        document.querySelector(DOMElements.hfToken).value = value;
-        },
-    
-        getStoredToken() {
-        return {
-            token: document.querySelector(DOMElements.hfToken).value
-        }
-        }
-    }
-    
-    })();
-    
-    const APPController = (function(UICtrl, APICtrl) {
-    
-    // get input field object ref
-    const DOMInputs = UICtrl.inputField();
-    
-    // get genres on page load
-    const loadGenres = async () => {
-        //get the token
-        const token = await APICtrl.getToken();
-        //store the token onto the page
-        UICtrl.storeToken(token);
-        //get the genres
-        const genres = await APICtrl.getGenres(token);
-        //populate our genres select element
-        genres.forEach(element => UICtrl.createGenre(element.name, element.id));
-    }
-    
-    // create genre change event listener
-    DOMInputs.genre.addEventListener('change', async () => {
-        //reset the playlist
-        UICtrl.resetPlaylist();
-        //get the token that's stored on the page
-        const token = UICtrl.getStoredToken().token;
-        // get the genre select field
-        const genreSelect = UICtrl.inputField().genre;
-        // get the genre id associated with the selected genre
-        const genreId = genreSelect.options[genreSelect.selectedIndex].value;
-        // ge the playlist based on a genre
-        const playlist = await APICtrl.getPlaylistByGenre(token, genreId);
-        // create a playlist list item for every playlist returned
-        playlist.forEach(p => UICtrl.createPlaylist(p.name, p.tracks.href));
-    });
-    
-    
-    // create submit button click event listener
-    DOMInputs.submit.addEventListener('click', async (e) => {
-        // prevent page reset
-        e.preventDefault();
-        // clear tracks
-        UICtrl.resetTracks();
-        //get the token
-        const token = UICtrl.getStoredToken().token;
-        // get the playlist field
-        const playlistSelect = UICtrl.inputField().playlist;
-        // get track endpoint based on the selected playlist
-        const tracksEndPoint = playlistSelect.options[playlistSelect.selectedIndex].value;
-        // get the list of tracks
-        const tracks = await APICtrl.getTracks(token, tracksEndPoint);
-        // create a track list item
-        tracks.forEach(el => UICtrl.createTrack(el.track.href, el.track.name))
-    
-    });
-    
-    // create song selection click event listener
-    DOMInputs.tracks.addEventListener('click', async (e) => {
-        // prevent page reset
-        e.preventDefault();
-        UICtrl.resetTrackDetail();
-        // get the token
-        const token = UICtrl.getStoredToken().token;
-        // get the track endpoint
-        const trackEndpoint = e.target.id;
-        //get the track object
-        const track = await APICtrl.getTrack(token, trackEndpoint);
-        // load the track details
-        UICtrl.createTrackDetail(track.album.images[2].url, track.name, track.artists[0].name);
-    });
-    
-    return {
-        init() {
-        console.log('App is starting');
-        loadGenres();
-        }
-    }
-    
-    })(UIController, APIController);
-    
-    // will need to call a method to load the genres on page load
-    APPController.init();
-    
-    
-    
-    
+
+// clear list each time API is called 
+function removeItem() {
+    list.innerHTML = '';
+}
+
+
+  
+// visulatisations of users data (top tracks, genres, popularity rating,) 
+
+// get playlist items 
+
+// create new playlist with
