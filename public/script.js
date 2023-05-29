@@ -1,7 +1,7 @@
 // Includes code from https://developer.spotify.com/documentation/web-api/tutorials/code-flow
 // login to users profile (user gives permissions)
 // URL to which the user will be redirected after the authentication process.
-var redirect = "http://localhost:1234";
+var redirect = "http://localhost:1234/callback";
 
 // credentials provided by Spotify for the application to authenticate with the Spotify API.
 const client_id = 'ad8a873204e5497ab79d7f1ea3451ce8';
@@ -13,12 +13,12 @@ const AUTHORIZE = "http://accounts.spotify.com/authorize";
 const TOKEN = "https://accounts.spotify.com/api/token"
 const TRACKS = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time range=short_term";
 
-//accessing html
+// html elements
 const list = document.getElementById('list');
 const cover = document.getElementById ('cover');
 cover.classList.add("hide");
 
-// authorisation URL
+// redirect to authorisation URL
 function authorize() {
     let url = AUTHORIZE;
     url += "?client_id=" + client_id; 
@@ -31,8 +31,9 @@ function authorize() {
 
 
 //loading dependant on whether user has previously logged in or not 
+//spotify access token ia valid for 60minutes
 function onPageLoad() {
-    // getSongs();
+
     if (window.location.search.length > 0) {
         handleRedirect();
     } else {
@@ -44,7 +45,7 @@ function onPageLoad() {
 function handleRedirect() {
     let code = getCode();
     fetchAccessToken(code);
-    window.history.pushState("","",redirect)
+    window.history.pushState("","",redirect) // remove param from URL
 }
 
 function getCode() {
@@ -57,13 +58,14 @@ function getCode() {
     return code;
 }
 
-// making an api call 
+// making api call to api/token endpoint  
 function fetchAccessToken(code) {
     let body = "grant_type=authorization_code"; 
     body += "&code=" + code; 
+    body += "&redirect_uri" = encodeURI(redirect)
     body += "&client_id=" + client_id; 
     body += "&client_secret=" + client_secret;
-    callAuthApi(body);
+    callAuthApi(body); 
 }
 
 // Post call to spotify API to retrive authorisation data
@@ -87,7 +89,7 @@ function refreshAcessToken() {
 function handleAuthResponse() {
     // if sucessful, have access to users information
     if(this.status == 200) {
-        var data = JSON.parse(this.responseText);
+        var data = JSON.parse(this.responseText); // parse data
         if (data.access_token != undefined) {
             access_token = data.access_token;
             localStorage.setItem("refresh_token", refresh_token);
@@ -97,21 +99,20 @@ function handleAuthResponse() {
         console.log(this.repsonseText);
         alert(this.responseText);
     }
-}
 
-// get call to the API 
+// get call to the API to retrive users top songs 
 function getSongs() {
     callApi("GET", TRACKS, null, handleSongResponse);
 }
 
-// post call to spotify API 
+// post call to spotify API to retrieve 
 function callApi(method, url, body, callback) {
     let xhr = new XMLHttpRequest();
     xhr.open(method, url, true);
     xhr.setRequestHeader (`Content-Type`, `application/json`);
     xhr.setRequestHeader ('Authorization', 'Basic' + localStorage.getItem("access_token"));
     xhr.send (body);
-    xhil.onload = callback;
+    xhr.onload = callback;
 }
 
 function handleSongResponse() {
@@ -180,11 +181,4 @@ function songList (data) {
 function removeItem() {
     list.innerHTML = '';
 }
-
-
-  
-// visulatisations of users data (top tracks, genres, popularity rating,) 
-
-// get playlist items 
-
-// create new playlist with
+}
