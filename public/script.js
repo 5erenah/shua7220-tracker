@@ -11,7 +11,7 @@ const client_secret = 'a35fb90ab96948129f2d21a34e5ab77d';
 const AUTHORIZE = "http://accounts.spotify.com/authorize";
 // URLs for Spotify API endpoints.
 const TOKEN = "https://accounts.spotify.com/api/token"
-const TRACKS = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time range=short_term";
+const TRACKS = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=long_term";
 
 // html elements
 const list = document.getElementById('list');
@@ -53,7 +53,7 @@ function getCode() {
     const queryString = window.location.search;
     if (queryString.length > 0){
         const urlParams = new URLSearchParams(queryString);
-        code = urlParams.get(`code`);
+        code = urlParams.get('code');
     }
     return code;
 }
@@ -62,7 +62,7 @@ function getCode() {
 function fetchAccessToken(code) {
     let body = "grant_type=authorization_code"; 
     body += "&code=" + code; 
-    body += "&redirect_uri" = encodeURI(redirect)
+    body += "&redirect_uri=" + encodeURI(redirect);
     body += "&client_id=" + client_id; 
     body += "&client_secret=" + client_secret;
     callAuthApi(body); 
@@ -92,13 +92,18 @@ function handleAuthResponse() {
         var data = JSON.parse(this.responseText); // parse data
         if (data.access_token != undefined) {
             access_token = data.access_token;
+            localStorage.setItem("access_token", access_token);
+        }  
+        if (data.refresh_token != undefined) {
+            refresh_token = data.refresh_token;
             localStorage.setItem("refresh_token", refresh_token);
-        } 
+        }    
         getSongs();
     } else { //else return error 
         console.log(this.repsonseText);
         alert(this.responseText);
     }
+}
 
 // get call to the API to retrive users top songs 
 function getSongs() {
@@ -110,7 +115,7 @@ function callApi(method, url, body, callback) {
     let xhr = new XMLHttpRequest();
     xhr.open(method, url, true);
     xhr.setRequestHeader (`Content-Type`, `application/json`);
-    xhr.setRequestHeader ('Authorization', 'Basic' + localStorage.getItem("access_token"));
+    xhr.setRequestHeader ('Authorization', 'Bearer ' + localStorage.getItem("access_token"));
     xhr.send (body);
     xhr.onload = callback;
 }
@@ -124,26 +129,26 @@ function handleSongResponse() {
         refreshAcessToken();
     } else {
         console.log(this.responseText);
-        alert(this.repsonseText);
+        alert(this.responseText);
     }
 }
 
-function songList (data) {
+function songList(data) {
     removeItem();
     cover.classList.remove('hide');
     for(i = 0; i < data.items.length; i++) {
-        const list_item = document.createtlement ('div');
+        const list_item = document.createElement ('div');
         const list_text = document.createElement ('div');
         const song = document.createElement('div');
-        const artist_album = document.createtlement('div');
+        const artist_album = document.createElement('div');
         const img = document.createElement ('img') ;
-        const span = document.createtlement('span');
-        const popu = document.createElement ('div') ;
+        const span = document.createElement('span');
+        const popu = document.createElement ('div');
         const ref = document.createElement ('a');
         const link = document.createTextNode ('Link to Spotify') ;
-        ref.appendchild(link);
+        ref.appendChild(link);
         ref.title = "Link to Spotify";
-        ref.href = data.items|il.external_urls.spotify;
+        ref.href = data.items[i].external_urls.spotify;
 
         list_item.classList.add("list-item");
         list_text.classList.add("list-text");
@@ -157,28 +162,26 @@ function songList (data) {
         var li = document.createElement('li');
         img.src = data.items[i].album.images[1].url;
 
-        popu.innerHTML= "Popularity Rating: " + data.items[li].popularity;
-        span.innerHTML = data.items[li].name;
+        popu.innerHTML= "Popularity Rating: " + data.items[i].popularity;
+        span.innerHTML = data.items[i].name;
         artist_album.innerHTML = data.items[i].album.name + " . " + data.items[i].artists[0].name;
       
-        //span.appendchild(a)
+        //span.appendChild(a)
         song.appendChild(span);
 
-        list_text.appendchild (song) ;
+        list_text.appendChild (song) ;
         list_text.appendChild(artist_album);
-        list_text.appendchild(popu);
-        list_text.appendchild(ref);
-        list_item.appendchild(list_text) ;
+        list_text.appendChild(popu);
+        list_text.appendChild(ref);
+        list_item.appendChild(list_text) ;
         list_item.appendChild(img);
-        li.appendchild(list_item);
+        li.appendChild(list_item);
 
-
-        list.appendchild(li);
+        list.appendChild(li);
         }
     }
 
 // clear list each time API is called 
 function removeItem() {
     list.innerHTML = '';
-}
 }

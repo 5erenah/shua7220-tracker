@@ -143,6 +143,7 @@ body {
     background-color: #000000;
     font-family: "Roboto", sans-serif;
     display: flex;
+    color: #ffffff;
 }
 
 @media screen and (max-width: 1000px) {
