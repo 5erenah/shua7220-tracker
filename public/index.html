@@ -11,28 +11,30 @@
 
 <body onload="onPageLoad()"> 
 
-    <div id= "login">
+    <!-- Login view -->
+    <div id= "login-view">
         <div id="welcome">
-            Welcome :)<br><br>Login to Spotify and see your Top 10 artists and songs of all time
+            <h1>Welcome :)</h1>
+            <h2>Login to Spotify and generate a playlist made for you!</h2>
         </div>
         <div class ="button-log">
-            <button class="login-btn" onclick="authorize()">
+            <!-- button redirects user to spotify authentication page -->
+            <button id="login-btn" onclick="authorize()">
                 Login to Spotify
             </button>
         </div>
     </div>
     
-    <!-- visulatisations of users data (top tracks, genres, popularity rating,)  -->
-    <div id="logged">
-        <div id = "cover" class="cover">
-            <div class="'nav">
-                welcome to your spotify
-            </div>
-            <div class="toggle">
-                <button id = 'track-btn' onclick="getSongs()">
-                    Top Tracks 
-                </button>
-            </div>
+
+   <!-- Logged view -->
+    <div id="logged-view" style="display: none;">
+
+        <!-- left -->
+        <section id = "cover" class="cover"> 
+            <!-- title -->
+                <h3> Your Top 10 Tracks </h3>
+                <!-- button to retrieve user data -->
+            <!-- visulatisations of users data top 10 tracks (incl name, album, artist, popularity rating)  -->
             <div id="API" class="API">
                 <div class = "list">
                     <ol id ="list" class="results">
@@ -40,8 +42,26 @@
                     </ol>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
+
+        <!-- right panel -->
+        <section id="suggested">
+            <!-- title -->
+            <div id ="playlistheader"> 
+                <h3> Playlist For You </h3>
+            </div>
+            
+
+            <button id="suggest-btn" onclick="suggest()">SUGGEST</button>
+            <section id = "playlist">
+                <ol id ="recommended" class="newSongs">
+
+                </ol>
+            </section>
+                
+        </section>  
+    </div>
+
 
     <script src="script.js" type="text/javascript"></script> <!-- Links an custom JavaScript file -->
 </body> 

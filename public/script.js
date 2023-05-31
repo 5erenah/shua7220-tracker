@@ -11,7 +11,10 @@ const client_secret = 'a35fb90ab96948129f2d21a34e5ab77d';
 const AUTHORIZE = "http://accounts.spotify.com/authorize";
 // URLs for Spotify API endpoints.
 const TOKEN = "https://accounts.spotify.com/api/token"
+// endpoint specifies the limit of 10 songs from users long term listening history
 const TRACKS = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=long_term";
+// endpoint specifies the limit of 10 songs from users long term listening history
+const SUGGESTED = "https://api.spotify.com/v1/recommendations?offset=0&limit=10&"
 
 // html elements
 const list = document.getElementById('list');
@@ -30,14 +33,19 @@ function authorize() {
 }
 
 
-//loading dependant on whether user has previously logged in or not 
-//spotify access token ia valid for 60minutes
 function onPageLoad() {
-
+    access_token = localStorage.getItem("access_token")
+    // if statement to check whether access token exists and is valid then go to "logged-view"
+    // regardless of browser refresh (Spotify access token lasts 60 minutes)
     if (window.location.search.length > 0) {
-        handleRedirect();
-    } else {
+        handleRedirect(); 
+    } else if (access_token) {
+        document.getElementById("login-view").style.display = "none";
+        document.getElementById("logged-view").style.display = "block";
         getSongs();
+    } else {
+        document.getElementById("login-view").style.display = "block";
+        document.getElementById("logged-view").style.display = "none";
     }
 }
 
@@ -79,7 +87,7 @@ function callAuthApi(body) {
 }
 
 function refreshAcessToken() {
-    refresh_token = localstorage.getItem("refresh_token");
+    refresh_token = localStorage.getItem("refresh_token");
     let body = "grant_type=refresh_token";
     body += "&refresh_token=" + refresh_token;
     body += "&client_id=" + client_id;
@@ -98,6 +106,9 @@ function handleAuthResponse() {
             refresh_token = data.refresh_token;
             localStorage.setItem("refresh_token", refresh_token);
         }    
+        // Show the 'logged' view and hide the 'login' view
+        document.getElementById("login-view").style.display = "none";
+        document.getElementById("logged-view").style.display = "block";
         getSongs();
     } else { //else return error 
         console.log(this.repsonseText);
@@ -133,6 +144,7 @@ function handleSongResponse() {
     }
 }
 
+// Displays data (top 10 tracks) 
 function songList(data) {
     removeItem();
     cover.classList.remove('hide');
@@ -165,11 +177,11 @@ function songList(data) {
         popu.innerHTML= "Popularity Rating: " + data.items[i].popularity;
         span.innerHTML = data.items[i].name;
         artist_album.innerHTML = data.items[i].album.name + " . " + data.items[i].artists[0].name;
-      
-        //span.appendChild(a)
+    
+        //appending item to the ordered list  
         song.appendChild(span);
 
-        list_text.appendChild (song) ;
+        list_text.appendChild(song) ;
         list_text.appendChild(artist_album);
         list_text.appendChild(popu);
         list_text.appendChild(ref);
@@ -184,4 +196,37 @@ function songList(data) {
 // clear list each time API is called 
 function removeItem() {
     list.innerHTML = '';
+}
+
+// get call to the API to recommend tracks for users
+function suggest() {
+    callApi("GET", SUGGESTED, null, handleReccomendResponse);
+}
+
+// post call to spotify API to return recommendations
+function callApi(method, url, body, callback) {
+    let xhr = new XMLHttpRequest();
+    xhr.open(method, url, true);
+    xhr.setRequestHeader (`Content-Type`, `application/json`);
+    xhr.setRequestHeader ('Authorization', 'Bearer ' + localStorage.getItem("access_token"));
+    xhr.send (body);
+    xhr.onload = callback;
+}
+
+function handleSuggestResponse() {
+    if (this.status == 200) {
+        var data = JSON.parse(this.responseText);
+        console.log(data);
+        suggestedSongs(data);
+    } else if (this.status == 401){
+        refreshAcessToken();
+    } else {
+        console.log(this.responseText);
+        alert(this.responseText);
+    }
+}
+
+// Displays data (top 10 tracks) 
+function suggestedSongs(data) {
+    
 }
