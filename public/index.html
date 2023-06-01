@@ -15,7 +15,7 @@
     <div id= "login-view">
         <div id="welcome">
             <h1>Welcome :)</h1>
-            <h2>Login to Spotify and generate a playlist made for you!</h2>
+            <h2>Login to Spotify to view your Listening style!</h2>
         </div>
         <div class ="button-log">
             <!-- button redirects user to spotify authentication page -->
@@ -30,36 +30,55 @@
     <div id="logged-view" style="display: none;">
 
         <!-- left -->
-        <section id = "cover" class="cover"> 
+        <section id="form">
             <!-- title -->
-                <h3> Your Top 10 Tracks </h3>
+            <h3> WELCOME TO YOUR SPOTIFY </h3>
+            <div id ="nav">
                 <!-- button to retrieve user data -->
-            <!-- visulatisations of users data top 10 tracks (incl name, album, artist, popularity rating)  -->
-            <div id="API" class="API">
-                <div class = "list">
-                    <ol id ="list" class="results">
-    
-                    </ol>
+                <button id="getTracks" onclick="getSongs()">
+                    Top Songs 
+                </button>
+                <button id="getArtists" onclick="getArtists()">
+                    Top Artists 
+                </button>
+                <button id="musicProfile" onclick="getAudioFeatures">
+                    Music Profile
+                </button>
+                <button id="mood" onclick="">
+                    Your Mood
+                </button>
+            </div>
+            <!-- <form>
+                <div class="form-row">
+                    <label for="">Type</label>
                 </div>
-            </div>
-        </section>
+                <div class="form-row">
+                    <label for="listeningHistory">Type</label>
+                    <select id="listeningHistory" name="listeningHistory" required="true" >
+                        <option value="">Select one</option>
+                          <option value="Long term"></option>
+                          <option value="Middle term">Middle-term</option>
+                          <option value="Short term">Short-term</option>
+                      </select>
+                </div>
+                <div class="form-row">
+                    <input type="submit">
+                </div>
+              </form>
+             -->
+        </section>  
 
-        <!-- right panel -->
-        <section id="suggested">
-            <!-- title -->
-            <div id ="playlistheader"> 
-                <h3> Playlist For You </h3>
-            </div>
-            
 
-            <button id="suggest-btn" onclick="suggest()">SUGGEST</button>
-            <section id = "playlist">
-                <ol id ="recommended" class="newSongs">
+        <!-- right -->
+        <section id = "cover" class="cover"> 
+            <!-- visulatisations of users data top 10 tracks (incl name, album, artist, popularity rating)  -->
+            <section class = "list">
+                <ol id ="list" class="results">
 
                 </ol>
             </section>
-                
-        </section>  
+        </section>
+
     </div>
 
 
