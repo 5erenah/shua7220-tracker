@@ -30,17 +30,24 @@
     <div id="logged-view" style="display: none;">
 
         <!-- left -->
-        <section id="form">
+        <section id="left">
             <!-- title -->
             <h3> WELCOME TO YOUR SPOTIFY </h3>
+            <form>
+                <div class="form-group">
+                  <label for="term">Select the length of listening history:</label>
+                  <select id="term" name="term">
+                    <option value="long_term">Long term</option>
+                    <option value="medium_term">Middle term</option>
+                    <option value="short_term">Short term</option>
+                  </select>
+                </div>
+                <input type="submit" value="Submit">
+              </form>
+            
             <div id ="nav">
                 <!-- button to retrieve user data -->
-                <button id="getTracks" onclick="getSongs()">
-                    Top Songs 
-                </button>
-                <button id="getArtists" onclick="getArtists()">
-                    Top Artists 
-                </button>
+                
                 <button id="musicColour" onClick="generateColour()">
                     Generate your Colour Palette 
                 </button>
@@ -50,6 +57,14 @@
 
         <!-- right -->
         <section id = "cover" class="cover"> 
+            <div id="toggle"> 
+                <button id="getTracks" onclick="getSongs(tracksEndpoint)">
+                    Top Songs 
+                </button>
+                <button id="getArtists" onclick="getArtists(artistsEndpoint)">
+                    Top Artists 
+                </button>
+            </div>  
             <!-- visulatisations of users data top 10 tracks (incl name, album, artist, popularity rating)  -->
             <section class = "list">
                 <ol id ="list" class="results">

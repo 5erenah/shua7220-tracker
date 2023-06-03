@@ -12,9 +12,13 @@ const AUTHORIZE = "http://accounts.spotify.com/authorize";
 // URLs for Spotify API endpoints.
 const TOKEN = "https://accounts.spotify.com/api/token"
 // endpoint specifies the limit of 10 songs OR artists from users long term listening history
-const TRACKS = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=long_term";
-const ARTISTS = "https://api.spotify.com/v1/me/top/artists?offset=0&limit=10&time_range=long_term";
+// const TRACKS = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10";
+// const ARTISTS = "https://api.spotify.com/v1/me/top/artists?offset=0&limit=10";
 const AUDIO_FEATURES = "https://api.spotify.com/v1/audio-features";
+
+var tracksEndpoint = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=medium_term";
+var artistsEndpoint = "https://api.spotify.com/v1/me/top/artists?offset=0&limit=10&time_range=medium_term";
+
 
 // html elements
 const list = document.getElementById('list');
@@ -25,6 +29,24 @@ cover.classList.add("hide");
 var trackIdsStr = "";
 var topTrait = "";
 
+document.addEventListener('DOMContentLoaded', function () {
+    var form = document.querySelector('form');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var term = document.getElementById('term').value;
+      console.log('Selected option:', term);
+  
+    tracksEndpoint = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=" + term;
+    artistsEndpoint = "https://api.spotify.com/v1/me/top/artists?offset=0&limit=10&time_range=" + term;
+
+    getSongs(tracksEndpoint)
+
+      console.log('song option:', artistsEndpoint);
+      console.log('trac option:', tracksEndpoint);
+  
+      return tracksEndpoint, artistsEndpoint;
+    });
+  });  
 
 // redirect to authorisation URL
 function authorize() {
@@ -43,9 +65,10 @@ function onPageLoad() {
     if (window.location.search.length > 0) {
         handleRedirect(); 
     } else if (access_token) {
+        document.getElementById('term').value = term;
         document.getElementById("login-view").style.display = "none";
         document.getElementById("logged-view").style.display = "block";
-        getSongs();
+        getSongs(tracksEndpoint);
     } else {
         document.getElementById("login-view").style.display = "block";
         document.getElementById("logged-view").style.display = "none";
@@ -119,9 +142,12 @@ function handleAuthResponse() {
     }
 }
 
+
 // get call to the API to retrive users top songs 
-function getSongs() {
-    callApi("GET", TRACKS, null, handleSongResponse);
+function getSongs(tracksEndpoint) {
+    // var term = document.getElementById('term').value;
+    // var url = `https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=${term}`;
+    callApi("GET", tracksEndpoint, null, handleSongResponse);
 }
 
 // Post call to spotify API to retrieve data
@@ -157,8 +183,6 @@ function handleSongResponse() {
         alert(this.responseText);
     }
 }
-
-
 
 // Displays Song data (top 10 tracks) 
 function songList(data) {
@@ -219,8 +243,10 @@ function removeItem() {
 }
 
 // API call to get users top 10 artists
-function getArtists() {
-    callApi("GET", ARTISTS, null, handleArtistResponse);
+function getArtists(artistsEndpoint) {
+    // var term = document.getElementById('term').value;
+    // var url = `https://api.spotify.com/v1/me/top/artists?offset=0&limit=10&time_range=${term}`;
+    callApi("GET", artistsEndpoint, null, handleArtistResponse);
 }
 
 function handleArtistResponse() {
@@ -296,7 +322,7 @@ function artistList(data) {
 // Function to retrieve audio features based on users top 10 songs
 function getAudioFeatures() {
   // Construct the API URL with the track IDs taken from user's top 10 tracks
-  const FEATURES = `${AUDIO_FEATURES}?ids=${trackIdsStr}`;
+  var FEATURES = `${AUDIO_FEATURES}?ids=${trackIdsStr}`;
 
   // Make the API call
   callApi("GET", FEATURES, null, handleAudioFeaturesResponse);

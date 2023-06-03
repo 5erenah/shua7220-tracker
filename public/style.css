@@ -234,7 +234,7 @@ body {
 
 
 /* styling left side of logged-view*/
-#form {
+#left {
     float: left;
     width: 30%;
     height: 100vh;
@@ -246,11 +246,11 @@ body {
     box-shadow: 0 2px 4px #000000;
 }
 
-#form > form {
+#left > form {
     margin-top: 3em;
 }
 
-#form > h3 {
+#left > h3 {
     color: #ffffff;
 }
 
