@@ -27,7 +27,7 @@ cover.classList.add("hide");
 
 // Declare the global variables with initial values
 var trackIdsStr = "";
-var topTrait = "";
+var colour = '#fffff';
 
 document.addEventListener('DOMContentLoaded', function () {
     var form = document.querySelector('form');
@@ -227,7 +227,7 @@ function songList(data) {
         list_text.appendChild(song);
         list_text.appendChild(artist);
         list_text.appendChild(album);
-        // list_text.appendChild(popu);
+        list_text.appendChild(popu);
         list_text.appendChild(ref);
         list_item.appendChild(list_text);
         list_item.appendChild(img);
@@ -369,14 +369,13 @@ function handleAudioFeaturesResponse() {
         { feature: 'valence', percentage: averageValence },
         { feature: 'liveness', percentage: averageLiveness }
     ];
-    
-    // sorting from highest percent to lowest
-    percentages.sort((a, b) => b.percentage - a.percentage);
-    
-    const topTrait = percentages[0].feature;
-    localStorage.setItem('topTrait', topTrait); 
-    
-    console.log('Top Audio Feature:', topTrait);
+
+    // Convert the percentages array to a JSON string
+    const percentagesJSON = JSON.stringify(percentages);
+
+    // Store the JSON string in the local storage
+    localStorage.setItem('percentages', percentagesJSON);
+        
 
   } else if (this.status == 401) {
     refreshAcessToken();
@@ -389,46 +388,78 @@ function handleAudioFeaturesResponse() {
 // Define the callback function
 function generateColour() {
     removeItem()
-    var topTrait = localStorage.getItem('topTrait'); // Retrieve the value from local storage
-    console.log('Top Audio Feature:', topTrait);
     cover.classList.remove('hide');
-    if(topTrait == 'energetic') {
-        var colour = '#FF69B4'
-        var desc = "The pink palette indicates that your top songs are energetic!"
-    }
-    if(topTrait == 'danceability') {
-        var colour = '#FF0000'
-        var desc = "The red palette indicates that your top songs are mostly dancable!"
-    }
-    if(topTrait == 'valence') {
-        var colour = '#FFFF00'
-        var desc = "A yellow palette indicates that you have songs with high valence (happy, cheerful songs)"
-    }
-    if(topTrait == 'liveliness') {
-        var colour = '#2F483E'
-        var desc = "A green palette indicates that your top songs are lively!"
-    }
-    generateColourPalette(colour, desc)
+
+    // Retrieve the JSON string from the local storage
+    const percentagesJSON = localStorage.getItem('percentages');
+
+    // Convert the JSON string back to an array
+    const percentages = JSON.parse(percentagesJSON);
+
+    const swatch = [];
+
+    percentages.forEach(item => {
+        let colour;
+
+        if (item.percentage >= 1 && item.percentage <= 10) {
+            colour = '#800080'; // purple
+        } else if (item.percentage > 10 && item.percentage <= 20) {
+            colour = '#FF00FF'; // magenta
+        } else if (item.percentage > 20 && item.percentage <= 30) {
+            colour = '#0000FF'; // blue
+        } else if (item.percentage > 30 && item.percentage <= 40) {
+            colour = '#00FFFF'; // aqua
+        } else if (item.percentage > 40 && item.percentage <= 50) {
+            colour = '#008000'; // green
+        } else if (item.percentage > 50 && item.percentage <= 60) {
+            colour = '#FFFF00'; // yellow
+        } else if (item.percentage > 60 && item.percentage <= 70) {
+            colour = '#FFD700'; // orange yellow
+        } else if (item.percentage > 70 && item.percentage <= 80) {
+            colour = '#FFA500'; // orange
+        } else if (item.percentage > 80 && item.percentage <= 90) {
+            colour = '#FF0000'; // red
+        } else if (item.percentage > 90 && item.percentage <= 100) {
+            colour = '#FFC0CB'; // pink
+        }
+
+        console.log(`Feature: ${item.feature}, Colour: ${colour}`);
+        swatch.push(colour);
+      });
+
+    generateColourPalette(swatch)
+    
 }
 
-function generateColourPalette(colour, desc) {
-    // Creating HTML elements
-    var colourPalette = document.createElement("div");
-    colourPalette.style.backgroundColor = colour;
-    // Create the explaination of colour
-    var paletteDesc = document.createElement("p");
-    paletteDesc.textContent = desc;
-    // Create the heading element
+function generateColourPalette(swatch) {
+    // Create and display the heading of the palette
     var heading = document.createElement("h2");
     heading.textContent = "Your Musical Colour";
-    
-    // add information
-    colourPalette.classList.add("colorBlock");
-    paletteDesc.classList.add("paletteDesc");
-
-    // document.body.appendChild(colourPalette);
     list.appendChild(heading);
-    list.appendChild(colourPalette);
-    list.appendChild(paletteDesc);
-
+  
+    // Retrieve the JSON string from the local storage
+    const percentagesJSON = localStorage.getItem('percentages');
+  
+    // Convert the JSON string back to an array
+    const percentages = JSON.parse(percentagesJSON);
+  
+    // Iterate through the swatch array to create the color blocks and descriptions
+    swatch.forEach((colour, index) => {
+      // Get the feature name and percentage associated with the current color
+      var featureName = percentages[index].feature;
+      var percentage = percentages[index].percentage;
+  
+      // Create the color block element
+      var colourPalette = document.createElement("div");
+      colourPalette.style.backgroundColor = colour;
+      colourPalette.classList.add("colorBlock");
+      list.appendChild(colourPalette);
+  
+      // Create the description element using the feature name and percentage
+      var paletteDesc = document.createElement("p");
+      paletteDesc.textContent = featureName + ': ' + percentage + '%';
+      paletteDesc.classList.add("paletteDesc");
+      list.appendChild(paletteDesc);
+    });
   }
+  
