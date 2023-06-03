@@ -12,8 +12,8 @@ const AUTHORIZE = "http://accounts.spotify.com/authorize";
 // URLs for Spotify API endpoints.
 const TOKEN = "https://accounts.spotify.com/api/token"
 // endpoint specifies the limit of 10 songs OR artists from users long term listening history
-const TRACKS = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=short_term";
-const ARTISTS = "https://api.spotify.com/v1/me/top/artists?offset=0&limit=10&time_range=short_term";
+const TRACKS = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=long_term";
+const ARTISTS = "https://api.spotify.com/v1/me/top/artists?offset=0&limit=10&time_range=long_term";
 const AUDIO_FEATURES = "https://api.spotify.com/v1/audio-features";
 
 // html elements
@@ -23,9 +23,7 @@ cover.classList.add("hide");
 
 // Declare the global variables with initial values
 var trackIdsStr = "";
-var trackPopuNum = [];
-var artistIds = [];
-var artistPopuNum = [];
+var topTrait = "";
 
 
 // redirect to authorisation URL
@@ -41,16 +39,13 @@ function authorize() {
 
 function onPageLoad() {
     access_token = localStorage.getItem("access_token")
-    // if statement to check whether access token exists and is valid then go to "logged-view"
-    // regardless of browser refresh (Spotify access token lasts 60 minutes)
+    // stays logged in after intial authetnication as long as access token exists and is valid then go to "logged-view"
     if (window.location.search.length > 0) {
         handleRedirect(); 
-    } 
-    else if (access_token) {
+    } else if (access_token) {
         document.getElementById("login-view").style.display = "none";
         document.getElementById("logged-view").style.display = "block";
         getSongs();
-        getArtists();
     } else {
         document.getElementById("login-view").style.display = "block";
         document.getElementById("logged-view").style.display = "none";
@@ -146,22 +141,15 @@ function handleSongResponse() {
         songList(data);
 
         // Process the response data and extract track IDs as a string
+        trackIdsStr = "" // clear string for each API call
         for (var i = 0; i < data.items.length; i++) {
             if (i > 0) {
                 trackIdsStr += ",";
             }
             trackIdsStr += data.items[i].id;
         }
-        console.log(trackIdsStr)
-
-        // fetch audio features based of the track IDs from the users top 10 tracks
-        if (trackIdsStr !== "") {
-            // Call the function to retrieve audio features using trackIdsStr
-            getAudioFeatures(trackIdsStr);
-        } else {
-            console.log("No track IDs available.");
-        }
-
+        // Store the trackIdsStr value in local storage
+        getAudioFeatures(trackIdsStr); 
     } else if (this.status == 401){
         refreshAcessToken();
     } else {
@@ -170,29 +158,6 @@ function handleSongResponse() {
     }
 }
 
-function handleArtistResponse() {
-    if (this.status == 200) {
-        var data = JSON.parse(this.responseText);
-        artistList(data);
-        console.log(data)
-
-        // Extract artist ID's
-        for (var i = 0; i < data.items.length; i++) {
-            artistIds.push(data.items[i].id);
-        }
-
-        // Extract artist popularity rating
-        for (var i = 0; i < data.items.length; i++) {
-            artistPopuNum.push(data.items[i].popularity);
-        }
-
-    } else if (this.status == 401){
-        refreshAcessToken();
-    } else {
-        console.log(this.responseText);
-        alert(this.responseText);
-    }
-}
 
 
 // Displays Song data (top 10 tracks) 
@@ -258,6 +223,19 @@ function getArtists() {
     callApi("GET", ARTISTS, null, handleArtistResponse);
 }
 
+function handleArtistResponse() {
+    if (this.status == 200) {
+        var data = JSON.parse(this.responseText);
+        artistList(data);
+        console.log(data)
+    } else if (this.status == 401){
+        refreshAcessToken();
+    } else {
+        console.log(this.responseText);
+        alert(this.responseText);
+    }
+}
+
 // Displays Artist data (top 10 tracks) 
 function artistList(data) {
     removeItem();
@@ -316,8 +294,7 @@ function artistList(data) {
     }
 
 // Function to retrieve audio features based on users top 10 songs
-function getAudioFeatures(trackIds) {
-
+function getAudioFeatures() {
   // Construct the API URL with the track IDs taken from user's top 10 tracks
   const FEATURES = `${AUDIO_FEATURES}?ids=${trackIdsStr}`;
 
@@ -347,10 +324,8 @@ function handleAudioFeaturesResponse() {
         totalValence += audioFeature.valence;
         totalLiveness += audioFeature.liveness;
     }
-    console.log(data.audio_features)
-    console.log(totalDanceability)
-    
-    // Finding the averages of all these numeric values
+
+    // Finding the averages of all these numeric values for each feature 
     const averageDanceability = (totalDanceability / data.audio_features.length) * 100;
     const averageEnergy = (totalEnergy / data.audio_features.length) * 100;
     const averageValence = (totalValence / data.audio_features.length) * 100;
@@ -361,6 +336,22 @@ function handleAudioFeaturesResponse() {
     console.log('Average Valence:', averageValence + '%');
     console.log('Average Liveness:', averageLiveness + '%');
 
+    // numeric values and associated names are stored in an array of objects 
+    const percentages = [
+        { feature: 'danceability', percentage: averageDanceability },
+        { feature: 'energetic', percentage: averageEnergy },
+        { feature: 'valence', percentage: averageValence },
+        { feature: 'liveness', percentage: averageLiveness }
+    ];
+    
+    // sorting from highest percent to lowest
+    percentages.sort((a, b) => b.percentage - a.percentage);
+    
+    const topTrait = percentages[0].feature;
+    localStorage.setItem('topTrait', topTrait); 
+    
+    console.log('Top Audio Feature:', topTrait);
+
   } else if (this.status == 401) {
     refreshAcessToken();
   } else {
@@ -369,64 +360,49 @@ function handleAudioFeaturesResponse() {
   }
 }
 
-
-// Displays features of song data (average of top 10 tracks)
-function featuresList(data) {
-    removeItem();
+// Define the callback function
+function generateColour() {
+    removeItem()
+    var topTrait = localStorage.getItem('topTrait'); // Retrieve the value from local storage
+    console.log('Top Audio Feature:', topTrait);
     cover.classList.remove('hide');
-    for(i = 0; i < data.items.length; i++) {
-        const list_item = document.createElement ('div');
-        const artist = document.createElement('div');
-        const genres = document.createElement('div');
-        const img = document.createElement ('img') ;
-        const span = document.createElement('span');
-        const popu = document.createElement ('div');
-        const ref = document.createElement ('a');
-        const link = document.createTextNode ('Link to Spotify') ;
-        ref.appendChild(link);
-        ref.title = "Link to Spotify";
-        ref.href = data.items[i].external_urls.spotify;
-
-        list_item.classList.add("list-item");
-        list_text.classList.add("list-text");
-        artist.classList.add ("artist") ;
-        genres.classList.add("genre");
-        ref.classList.add("links");
-        ref.setAttribute("target", "blank");
-        popu.classList.add("popu");
-        img.classList.add("resize");
-        
-        var li = document.createElement('li');
-        img.src = data.items[i].images[1].url;
-
-        popu.innerHTML= "Popularity Rating: " + data.items[i].popularity;
-        span.innerHTML = data.items[i].name;
-        for(j = 0; j < data.items[i].genres.length; j++){
-            if(j > 1) {
-                break;
-            } else if (j == 1) {
-                genres.innerHTML = genres.innerHTML + " . " + data.items[i].genres[j];
-            } else {
-                genres.innerHTML = data.items[i].genres[j];
-            }
-        }
-    
-        //appending item to the ordered list  
-        artist.appendChild(span);
-
-        list_text.appendChild(artist);
-        list_text.appendChild(genres);
-        list_text.appendChild(popu);
-        list_text.appendChild(ref);
-        list_item.appendChild(list_text);
-        list_item.appendChild(img);
-        li.appendChild(list_item);
-
-        list.appendChild(li);
-        }
+    if(topTrait == 'energetic') {
+        var colour = '#FF69B4'
+        var desc = "The pink palette indicates that your top songs are energetic!"
     }
-
-    function removeItem() {
-        list.innerHTML = '';
+    if(topTrait == 'danceability') {
+        var colour = '#FF0000'
+        var desc = "The red palette indicates that your top songs are mostly dancable!"
     }
+    if(topTrait == 'valence') {
+        var colour = '#FFFF00'
+        var desc = "A yellow palette indicates that you have songs with high valence (happy, cheerful songs)"
+    }
+    if(topTrait == 'liveliness') {
+        var colour = '#2F483E'
+        var desc = "A green palette indicates that your top songs are lively!"
+    }
+    generateColourPalette(colour, desc)
+}
+
+function generateColourPalette(colour, desc) {
+    // Creating HTML elements
+    var colourPalette = document.createElement("div");
+    colourPalette.style.backgroundColor = colour;
+    // Create the explaination of colour
+    var paletteDesc = document.createElement("p");
+    paletteDesc.textContent = desc;
+    // Create the heading element
+    var heading = document.createElement("h2");
+    heading.textContent = "Your Musical Colour";
     
+    // add information
+    colourPalette.classList.add("colorBlock");
+    paletteDesc.classList.add("paletteDesc");
+
+    // document.body.appendChild(colourPalette);
+    list.appendChild(heading);
+    list.appendChild(colourPalette);
+    list.appendChild(paletteDesc);
+
+  }
