@@ -91,16 +91,13 @@ function onPageLoad() {
     // stays logged in after intial authetnication as long as access token exists and is valid then go to "logged-view"
     if (window.location.search.length > 0) {
         handleRedirect(); 
-    } else if (access_token) {
+    } else {
         document.getElementById('term').value = term;
         document.getElementById("login-view").style.display = "none";
         document.getElementById("logged-view").style.display = "block";
         tracksButton.classList.add("active");
         artistsButton.classList.remove("active");
         getSongs(tracksEndpoint)
-    } else {
-        document.getElementById("login-view").style.display = "block";
-        document.getElementById("logged-view").style.display = "none";
     }
 }
 
