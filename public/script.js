@@ -16,8 +16,9 @@ const TOKEN = "https://accounts.spotify.com/api/token"
 // const ARTISTS = "https://api.spotify.com/v1/me/top/artists?offset=0&limit=10";
 const AUDIO_FEATURES = "https://api.spotify.com/v1/audio-features";
 
-var tracksEndpoint = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=medium_term";
-var artistsEndpoint = "https://api.spotify.com/v1/me/top/artists?offset=0&limit=10&time_range=medium_term";
+// default terms are medium term (6months)
+var tracksEndpoint = "https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=long_term";
+var artistsEndpoint = "https://api.spotify.com/v1/me/top/artists?offset=0&limit=10&time_range=long_term";
 
 
 // html elements
@@ -28,6 +29,12 @@ cover.classList.add("hide");
 // Declare the global variables with initial values
 var trackIdsStr = "";
 var colour = '#fffff';
+var tracksButton = document.getElementById("getTracks");
+var artistsButton = document.getElementById("getArtists");
+var colourbutton = document.getElementById("getColours")
+
+// event listeners 
+document.getElementById("login-btn").addEventListener("click", authorize);
 
 document.addEventListener('DOMContentLoaded', function () {
     var form = document.querySelector('form');
@@ -41,12 +48,32 @@ document.addEventListener('DOMContentLoaded', function () {
 
     getSongs(tracksEndpoint)
 
-      console.log('song option:', artistsEndpoint);
-      console.log('trac option:', tracksEndpoint);
-  
       return tracksEndpoint, artistsEndpoint;
     });
   });  
+
+//  event listeners for button functionality also tracks the users navigation
+tracksButton.addEventListener("click", function() {
+    getSongs(tracksEndpoint);
+    tracksButton.classList.add("active");
+    artistsButton.classList.remove("active");
+    colourbutton.classList.remove("active");
+});
+
+artistsButton.addEventListener("click", function() {
+    getArtists(artistsEndpoint);
+    artistsButton.classList.add("active");
+    tracksButton.classList.remove("active");
+    colourbutton.classList.remove("active");
+});
+
+colourbutton.addEventListener("click", function() {
+    generateColour();
+    colourbutton.classList.add("active");
+    tracksButton.classList.remove("active");
+    artistsButton.classList.remove("active");
+});
+
 
 // redirect to authorisation URL
 function authorize() {
@@ -68,7 +95,9 @@ function onPageLoad() {
         document.getElementById('term').value = term;
         document.getElementById("login-view").style.display = "none";
         document.getElementById("logged-view").style.display = "block";
-        getSongs(tracksEndpoint);
+        tracksButton.classList.add("active");
+        artistsButton.classList.remove("active");
+        getSongs(tracksEndpoint)
     } else {
         document.getElementById("login-view").style.display = "block";
         document.getElementById("logged-view").style.display = "none";
@@ -145,8 +174,6 @@ function handleAuthResponse() {
 
 // get call to the API to retrive users top songs 
 function getSongs(tracksEndpoint) {
-    // var term = document.getElementById('term').value;
-    // var url = `https://api.spotify.com/v1/me/top/tracks?offset=0&limit=10&time_range=${term}`;
     callApi("GET", tracksEndpoint, null, handleSongResponse);
 }
 
@@ -184,59 +211,64 @@ function handleSongResponse() {
     }
 }
 
-// Displays Song data (top 10 tracks) 
+
+// Displays Song data (top 10 tracks)
 function songList(data) {
     removeItem();
     cover.classList.remove('hide');
-    for(i = 0; i < data.items.length; i++) {
-        const list_item = document.createElement ('div');
-        const list_text = document.createElement ('div');
-        const song = document.createElement('div');
-        const artist= document.createElement('div');
-        const album = document.createElement('div');
-        const img = document.createElement ('img') ;
-        const span = document.createElement('span');
-        const popu = document.createElement ('div');
-        const ref = document.createElement ('a');
-        const link = document.createTextNode ('Link to Spotify') ;
-        ref.appendChild(link);
-        ref.title = "Link to Spotify";
-        ref.href = data.items[i].external_urls.spotify;
-
-        list_item.classList.add("list-item");
-        list_text.classList.add("list-text");
-        song.classList.add ("song") ;
-        artist.classList.add("artist");
-        album.classList.add("album");
-        ref.classList.add("links");
-        ref.setAttribute("target", "blank");
-        popu.classList.add("popu");
-        img.classList.add("resize");
-        
-        var li = document.createElement('li');
-        img.src = data.items[i].album.images[1].url;
-
-        popu.innerHTML= "Popularity Rating: " + data.items[i].popularity;
-        span.innerHTML = data.items[i].name;
-        artist.innerHTML = data.items[i].artists[0].name;
-        album.innerHTML = data.items[i].album.name;
-    
-        //appending item to the ordered list  
-        song.appendChild(span);
-
-        list_text.appendChild(song);
-        list_text.appendChild(artist);
-        list_text.appendChild(album);
-        list_text.appendChild(popu);
-        list_text.appendChild(ref);
-        list_item.appendChild(list_text);
-        list_item.appendChild(img);
-        li.appendChild(list_item);
-
-        list.appendChild(li);
-        }
+  
+    for (let i = 0; i < data.items.length; i++) {
+      const list_item = document.createElement('div');
+      const list_text = document.createElement('div');
+      const song = document.createElement('div');
+      const artist = document.createElement('div');
+      const album = document.createElement('div');
+      const img = document.createElement('img');
+      const span = document.createElement('span');
+      const number = document.createElement('div');
+      const popu = document.createElement('div');
+      const ref = document.createElement('a');
+  
+      ref.title = 'Link to Spotify';
+      ref.href = data.items[i].external_urls.spotify;
+  
+      list_item.classList.add('list-item');
+      list_text.classList.add('list-text');
+      song.classList.add('song');
+      artist.classList.add('artist');
+      album.classList.add('album');
+      number.classList.add('item-number');
+      ref.classList.add('links');
+      ref.setAttribute('target', '_blank');
+      popu.classList.add('popu');
+      img.classList.add('resize');
+  
+      var li = document.createElement('li');
+      img.src = data.items[i].album.images[1].url;
+  
+      popu.innerHTML = 'Popularity Rating: ' + data.items[i].popularity;
+      span.innerHTML = data.items[i].name;
+      artist.innerHTML = data.items[i].artists[0].name;
+      album.innerHTML = data.items[i].album.name;
+      number.innerHTML = (i + 1);
+  
+      // Appending item to the list
+      song.appendChild(span);
+  
+      list_item.appendChild(number);
+      list_text.appendChild(song);
+      list_text.appendChild(artist);
+      list_text.appendChild(album);
+      list_text.appendChild(popu);
+      ref.appendChild(img);
+      list_item.appendChild(ref);
+      list_item.appendChild(list_text);
+      li.appendChild(list_item);
+  
+      list.appendChild(li);
     }
-
+  }
+  
 // clear list each time API is called 
 function removeItem() {
     list.innerHTML = '';
@@ -244,9 +276,8 @@ function removeItem() {
 
 // API call to get users top 10 artists
 function getArtists(artistsEndpoint) {
-    // var term = document.getElementById('term').value;
-    // var url = `https://api.spotify.com/v1/me/top/artists?offset=0&limit=10&time_range=${term}`;
     callApi("GET", artistsEndpoint, null, handleArtistResponse);
+
 }
 
 function handleArtistResponse() {
@@ -266,58 +297,61 @@ function handleArtistResponse() {
 function artistList(data) {
     removeItem();
     cover.classList.remove('hide');
-    for(i = 0; i < data.items.length; i++) {
-        const list_item = document.createElement ('div');
-        const list_text = document.createElement ('div');
-        const artist = document.createElement('div');
-        const genres = document.createElement('div');
-        const img = document.createElement ('img') ;
-        const span = document.createElement('span');
-        const popu = document.createElement ('div');
-        const ref = document.createElement ('a');
-        const link = document.createTextNode ('Link to Spotify') ;
-        ref.appendChild(link);
-        ref.title = "Link to Spotify";
-        ref.href = data.items[i].external_urls.spotify;
-
-        list_item.classList.add("list-item");
-        list_text.classList.add("list-text");
-        artist.classList.add ("artist") ;
-        genres.classList.add("genre");
-        ref.classList.add("links");
-        ref.setAttribute("target", "blank");
-        popu.classList.add("popu");
-        img.classList.add("resize");
-        
-        var li = document.createElement('li');
-        img.src = data.items[i].images[1].url;
-
-        popu.innerHTML= "Popularity Rating: " + data.items[i].popularity;
-        span.innerHTML = data.items[i].name;
-        for(j = 0; j < data.items[i].genres.length; j++){
-            if(j > 1) {
-                break;
-            } else if (j == 1) {
-                genres.innerHTML = genres.innerHTML + " . " + data.items[i].genres[j];
-            } else {
-                genres.innerHTML = data.items[i].genres[j];
-            }
-        }
     
-        //appending item to the ordered list  
-        artist.appendChild(span);
-
-        list_text.appendChild(artist);
-        list_text.appendChild(genres);
-        list_text.appendChild(popu);
-        list_text.appendChild(ref);
-        list_item.appendChild(list_text);
-        list_item.appendChild(img);
-        li.appendChild(list_item);
-
-        list.appendChild(li);
+    for (let i = 0; i < data.items.length; i++) {
+      const list_item = document.createElement('div');
+      const list_text = document.createElement('div');
+      const artist = document.createElement('div');
+      const genres = document.createElement('div');
+      const img = document.createElement('img');
+      const span = document.createElement('span');
+      const number = document.createElement('div');
+      const popu = document.createElement('div');
+      const ref = document.createElement('a');
+      ref.title = 'Link to Spotify';
+      ref.href = data.items[i].external_urls.spotify;
+  
+      list_item.classList.add('list-item');
+      list_text.classList.add('list-text');
+      artist.classList.add('artist');
+      genres.classList.add('genre');
+      number.classList.add('item-number');
+      ref.classList.add('links');
+      ref.setAttribute('target', '_blank');
+      popu.classList.add('popu');
+      img.classList.add('resize');
+      
+      var li = document.createElement('li');
+      img.src = data.items[i].images[1].url;
+      number.innerHTML = (i + 1); 
+  
+      popu.innerHTML = 'Popularity Rating: ' + data.items[i].popularity;
+      span.innerHTML = data.items[i].name;
+      for (let j = 0; j < data.items[i].genres.length; j++) {
+        if (j > 1) {
+          break;
+        } else if (j == 1) {
+          genres.innerHTML = genres.innerHTML + ' . ' + data.items[i].genres[j];
+        } else {
+          genres.innerHTML = data.items[i].genres[j];
         }
+      }
+    
+      // Appending item to the ordered list  
+      artist.appendChild(span);
+  
+      list_item.appendChild(number); 
+      list_text.appendChild(artist);
+      list_text.appendChild(genres);
+      list_text.appendChild(popu);
+      ref.appendChild(img);
+      list_item.appendChild(ref);
+      list_item.appendChild(list_text);
+      li.appendChild(list_item);
+
+      list.appendChild(li);
     }
+  }
 
 // Function to retrieve audio features based on users top 10 songs
 function getAudioFeatures() {
@@ -352,10 +386,11 @@ function handleAudioFeaturesResponse() {
     }
 
     // Finding the averages of all these numeric values for each feature 
-    const averageDanceability = (totalDanceability / data.audio_features.length) * 100;
-    const averageEnergy = (totalEnergy / data.audio_features.length) * 100;
-    const averageValence = (totalValence / data.audio_features.length) * 100;
-    const averageLiveness = (totalLiveness / data.audio_features.length) * 100;
+    const averageDanceability = ((totalDanceability / data.audio_features.length) * 100).toFixed(2);
+    const averageEnergy = ((totalEnergy / data.audio_features.length) * 100).toFixed(2);
+    const averageValence = ((totalValence / data.audio_features.length) * 100).toFixed(2);
+    const averageLiveness = ((totalLiveness / data.audio_features.length) * 100).toFixed(2);
+
 
     console.log('Average Danceability:', averageDanceability + '%');
     console.log('Average Energy:', averageEnergy + '%');
@@ -434,18 +469,18 @@ function generateColour() {
 function generateColourPalette(swatch) {
     // Create and display the heading of the palette
     var heading = document.createElement("h2");
-    heading.textContent = "Your Musical Colour";
+    heading.textContent = "Your Musical Colours";
     list.appendChild(heading);
   
-    // Retrieve the JSON string from the local storage
-    const percentagesJSON = localStorage.getItem('percentages');
+    const swatchPalette = document.createElement('div');
+    swatchPalette.classList.add("swatchPalette");
   
-    // Convert the JSON string back to an array
+    const percentagesJSON = localStorage.getItem('percentages');
     const percentages = JSON.parse(percentagesJSON);
   
-    // Iterate through the swatch array to create the color blocks and descriptions
+    // Iterate through the swatch array to create the colour blocks and descriptions
     swatch.forEach((colour, index) => {
-      // Get the feature name and percentage associated with the current color
+      // Get the feature name and percentage associated with the current colour
       var featureName = percentages[index].feature;
       var percentage = percentages[index].percentage;
   
@@ -453,13 +488,27 @@ function generateColourPalette(swatch) {
       var colourPalette = document.createElement("div");
       colourPalette.style.backgroundColor = colour;
       colourPalette.classList.add("colorBlock");
-      list.appendChild(colourPalette);
   
       // Create the description element using the feature name and percentage
       var paletteDesc = document.createElement("p");
       paletteDesc.textContent = featureName + ': ' + percentage + '%';
       paletteDesc.classList.add("paletteDesc");
-      list.appendChild(paletteDesc);
-    });
+      paletteDesc.style.display = 'none'; // Set initial display to 'none'
+  
+      // Add event listeners for hovering over and leaving the color block
+      colourPalette.addEventListener('mouseover', function () {
+        // Show the dialogue pop-up when hovering over the color block
+        paletteDesc.style.display = 'block';
+      });
+  
+      colourPalette.addEventListener('mouseleave', function () {
+        // Hide the dialogue pop-up when leaving the color block
+        paletteDesc.style.display = 'none';
+      });
+  
+      colourPalette.appendChild(paletteDesc);
+      swatchPalette.appendChild(colourPalette);
+      list.appendChild(swatchPalette);
+    });  
   }
   

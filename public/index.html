@@ -6,73 +6,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- viewport for responsive design -->
     <title>Login</title> 
     <link rel="stylesheet" type="text/css" href="style.css"> <!-- Links custom CSS file for styling -->
-    <script src="https://kit.fontawesome.com/b1ba508e46.js"></script>  <!-- links to external source of icons -->
 </head>
 
 <body onload="onPageLoad()"> 
 
     <!-- Login view -->
     <div id= "login-view">
-        <div id="welcome">
-            <h1>Welcome :)</h1>
-            <h2>Login to Spotify to view your Listening style!</h2>
-        </div>
-        <div class ="button-log">
-            <!-- button redirects user to spotify authentication page -->
-            <button id="login-btn" onclick="authorize()">
-                Login to Spotify
-            </button>
+        <div id="title-box">
+            <div id="welcome">
+                <h1>Welcome!</h1>
+                <h2>Login to Spotify to view your Musical Colours</h2>
+            </div>
+            <div class ="button-log">
+                <!-- button redirects user to spotify authentication page -->
+                <button id="login-btn">
+                    Login to Spotify
+                </button>
+            </div>
         </div>
     </div>
     
 
    <!-- Logged view -->
     <div id="logged-view" style="display: none;">
+        <div id="inner">
 
-        <!-- left -->
-        <section id="left">
-            <!-- title -->
-            <h3> WELCOME TO YOUR SPOTIFY </h3>
-            <form>
-                <div class="form-group">
-                  <label for="term">Select the length of listening history:</label>
-                  <select id="term" name="term">
-                    <option value="long_term">Long term</option>
-                    <option value="medium_term">Middle term</option>
-                    <option value="short_term">Short term</option>
-                  </select>
+            <!-- left -->
+            <section id="left">
+                <!-- title -->
+                <div id="heading">
+                    <h1> TRACK YOUR SPOTIFY</h1>
                 </div>
-                <input type="submit" value="Submit">
-              </form>
-            
-            <div id ="nav">
-                <!-- button to retrieve user data -->
-                
-                <button id="musicColour" onClick="generateColour()">
-                    Generate your Colour Palette 
+                <form>
+                    <div class="form-group">
+                    <label for="term">Select time period:</label>
+                    <select id="term" name="term" required>
+                        <option value="long_term" selected>Two Years</option>
+                        <option value="medium_term">Six Months</option>
+                        <option value="short_term">One Month</option>
+                    </select>
+                    </div>
+                    <input type="submit" value="Submit">
+                </form>
+                <button id="getColours">
+                    Your Musical Colours 
                 </button>
-            </div>
-        </section>  
 
+            </section>  
 
-        <!-- right -->
-        <section id = "cover" class="cover"> 
-            <div id="toggle"> 
-                <button id="getTracks" onclick="getSongs(tracksEndpoint)">
-                    Top Songs 
-                </button>
-                <button id="getArtists" onclick="getArtists(artistsEndpoint)">
-                    Top Artists 
-                </button>
-            </div>  
-            <!-- visulatisations of users data top 10 tracks (incl name, album, artist, popularity rating)  -->
-            <section class = "list">
-                <ol id ="list" class="results">
+            <!-- right -->
+            <section id = "cover" class="cover"> 
+                <div id="toggle"> 
+                    <button id="getTracks">
+                        Top Songs 
+                    </button>
+                    <button id="getArtists">
+                        Top Artists 
+                    </button>
+                </div>  
+                <!-- visulatisations of users data top 10 tracks (incl name, album, artist, popularity rating)  -->
+                <section class = "list">
+                    <ul id ="list" class="results">
 
-                </ol>
+                    </ul>
+                </section>
             </section>
-        </section>
 
+        </div>
     </div>
 
 
